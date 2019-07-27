@@ -10,3 +10,15 @@ E:\A02SelfDemo\CamCalibration\CamCalibration\obj\x64\Debug\CamCalibration.csproj
 E:\A02SelfDemo\CamCalibration\CamCalibration\obj\x64\Debug\CamCalibration.csproj.CopyComplete
 E:\A02SelfDemo\CamCalibration\CamCalibration\obj\x64\Debug\CamCalibration.exe
 E:\A02SelfDemo\CamCalibration\CamCalibration\obj\x64\Debug\CamCalibration.pdb
+E:\A05\CamCalibration\CamCalibration\bin\x64\Debug\CamCalibration.exe.config
+E:\A05\CamCalibration\CamCalibration\bin\x64\Debug\CamCalibration.exe
+E:\A05\CamCalibration\CamCalibration\bin\x64\Debug\CamCalibration.pdb
+E:\A05\CamCalibration\CamCalibration\bin\x64\Debug\halcondotnet.dll
+E:\A05\CamCalibration\CamCalibration\obj\x64\Debug\CamCalibration.csprojAssemblyReference.cache
+E:\A05\CamCalibration\CamCalibration\obj\x64\Debug\CamCalibration.MainFrm.resources
+E:\A05\CamCalibration\CamCalibration\obj\x64\Debug\CamCalibration.Properties.Resources.resources
+E:\A05\CamCalibration\CamCalibration\obj\x64\Debug\CamCalibration.csproj.GenerateResource.cache
+E:\A05\CamCalibration\CamCalibration\obj\x64\Debug\CamCalibration.csproj.CoreCompileInputs.cache
+E:\A05\CamCalibration\CamCalibration\obj\x64\Debug\CamCalibration.csproj.CopyComplete
+E:\A05\CamCalibration\CamCalibration\obj\x64\Debug\CamCalibration.exe
+E:\A05\CamCalibration\CamCalibration\obj\x64\Debug\CamCalibration.pdb
