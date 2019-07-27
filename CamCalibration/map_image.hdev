@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hdevelop file_version="1.1" halcon_version="12.0">
+<procedure name="main">
+<interface/>
+<body>
+<l>dev_close_window ()</l>
+<l>dev_open_window (0, 0, 768 / 2, 576 / 2, 'black', WindowHandle1)</l>
+<l>set_display_font (WindowHandle1, 14, 'mono', 'true', 'false')</l>
+<l>dev_update_off ()</l>
+<l>dev_set_draw ('margin')</l>
+<l>dev_set_line_width (2)</l>
+<c>* </c>
+<c>* Calibrate the camera.</c>
+<c>* 标定相机</c>
+<l>CalibSetup:='calibration_object'</l>
+<l>CameraType:='area_scan_division'</l>
+<l>CalTabDescrFile := 'caltab_big.descr'</l>
+<c>* Make sure that the file 'CaltabName' is in the current directory,</c>
+<c>* the HALCONROOT/calib directory, or use an absolute path</c>
+<l>CamParIn := [0.008,0,0.0000086,0.0000086,384,288,768,576]</l>
+<c></c>
+<c></c>
+<l>CreateCalibrationID (CalibSetup, CameraType, CamParIn, CalTabDescrFile, CalibDataID)</l>
+<c></c>
+<c>* 图像标定</c>
+<l>NumImages := 10</l>
+<l>read_image (Images, 'calib/calib-3d-coord-' + [1:NumImages]$'02d')</l>
+<l>for Index := 1 to NumImages by 1</l>
+<l>    select_obj (Images, Image, Index)</l>
+<l>    dev_display (Image)</l>
+<l>    Message := 'Find calibration plate in\nall calibration images (' + Index + '/' + NumImages + ')'</l>
+<l>    disp_message (WindowHandle1, Message, 'window', 12, 12, 'black', 'true')</l>
+<c>    </c>
+<c>    * 查找标定板</c>
+<l>    FindCalibration (Image, Contours, Cross, CalibDataID, Index)</l>
+<c></c>
+<l>    dev_set_color ('green')</l>
+<l>    dev_display (Contours)</l>
+<l>    dev_set_color ('yellow')</l>
+<l>    dev_display (Cross)</l>
+<c>    </c>
+<c>    </c>
+<l>endfor</l>
+<l>disp_continue_message (WindowHandle1,'black','true')</l>
+<l>stop ()</l>
+<c></c>
+<c>* 生成校正图像</c>
+<l>GetCalibData (Maps, CalibDataID, CamParam)</l>
+<c></c>
+<l>for Index := 1 to NumImages by 1</l>
+<c>    * Obtain the pose of the calibration table    </c>
+<l>    GetMapsImage (Maps, Maps, CalibDataID, Index, CamParam)</l>
+<c>      </c>
+<l>endfor</l>
+<l>clear_calib_data (CalibDataID)</l>
+<c></c>
+<c>* 验证Map</c>
+<l>* ImgPath:='E:/A02SelfDemo/Calibration/'</l>
+<l>* write_image (Maps, 'tiff', 0,ImgPath+'Map')</l>
+<l>* read_image (Maps, ImgPath+'Map')</l>
+<c>* </c>
+<c>* Map the images</c>
+<c>* 校正图像</c>
+<l>NumImages := 10</l>
+<l>read_image (Images, 'calib/calib-3d-coord-' + [1:NumImages]$'02d')</l>
+<l>dev_open_window (0, 391, 900 / 2, 800 / 2, 'black', WindowHandle2)</l>
+<l>set_display_font (WindowHandle2, 14, 'mono', 'true', 'false')</l>
+<l>Button := 0</l>
+<l>NumImage := 1</l>
+<l>for I := 1 to NumImages by 1</l>
+<l>    dev_set_window (WindowHandle2)</l>
+<l>    dev_set_part (0, 0, 575, 767)</l>
+<l>    dev_clear_window ()</l>
+<l>    select_obj (Images, Image, I)</l>
+<l>    dev_display (Image)</l>
+<l>    dev_clear_window ()</l>
+<l>    select_obj (Maps, MapSingle, I)</l>
+<l>    map_image (Image, MapSingle, ImageMapped)</l>
+<c>    </c>
+<l>    dev_set_window (WindowHandle2)</l>
+<l>    dev_set_part (0, 0, 799, 899)</l>
+<l>    dev_clear_window ()</l>
+<l>    dev_display (ImageMapped)</l>
+<l>    Message := 'Calibration image (' + I + '/' + NumImages + ')'</l>
+<l>    disp_message (WindowHandle2, Message, 'window', 12, 12, 'black', 'true')</l>
+<l>    Message := 'Mapped image'</l>
+<l>    disp_message (WindowHandle2, Message, 'window', 12, 12, 'black', 'true')</l>
+<l>    if (I &lt; NumImages)</l>
+<l>        disp_continue_message (WindowHandle2, 'black', 'true')</l>
+<l>        stop ()</l>
+<l>    endif</l>
+<l>endfor</l>
+</body>
+<docu id="main">
+<parameters/>
+</docu>
+</procedure>
+<procedure name="CreateCalibrationID">
+<interface>
+<ic>
+<par name="CalibSetup" base_type="ctrl" dimension="0"/>
+<par name="CameraType" base_type="ctrl" dimension="0"/>
+<par name="CamParIn" base_type="ctrl" dimension="0"/>
+<par name="CalTabDescrFile" base_type="ctrl" dimension="0"/>
+</ic>
+<oc>
+<par name="CalibDataID" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<l>create_calib_data (CalibSetup, 1, 1, CalibDataID)</l>
+<l>set_calib_data_cam_param (CalibDataID, 0, CameraType,CamParIn)</l>
+<l>set_calib_data_calib_object (CalibDataID, 0, CalTabDescrFile)</l>
+<l>return ()</l>
+</body>
+<docu id="CreateCalibrationID">
+<parameters>
+<parameter id="CalTabDescrFile"/>
+<parameter id="CalibDataID"/>
+<parameter id="CalibSetup"/>
+<parameter id="CamParIn"/>
+<parameter id="CameraType"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="FindCalibration">
+<interface>
+<io>
+<par name="Image" base_type="iconic" dimension="0"/>
+</io>
+<oo>
+<par name="Contours" base_type="iconic" dimension="0"/>
+<par name="Cross" base_type="iconic" dimension="0"/>
+</oo>
+<ic>
+<par name="CalibDataID" base_type="ctrl" dimension="0"/>
+<par name="Index" base_type="ctrl" dimension="0"/>
+</ic>
+</interface>
+<body>
+<l>find_calib_object (Image, CalibDataID, 0, 0, Index - 1, [], [])</l>
+<l>get_calib_data (CalibDataID, 'camera', 0, 'init_params', StartCamPar)</l>
+<l>get_calib_data_observ_points (CalibDataID, 0, 0, Index - 1, Row, Column, index, Pose)</l>
+<l>get_calib_data_observ_contours (Contours, CalibDataID, 'caltab', 0, 0, Index - 1)</l>
+<l>gen_cross_contour_xld (Cross, Row, Column, 6, 0.785398)</l>
+<l>return ()</l>
+</body>
+<docu id="FindCalibration">
+<parameters>
+<parameter id="CalibDataID"/>
+<parameter id="Contours"/>
+<parameter id="Cross"/>
+<parameter id="Image"/>
+<parameter id="Index"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="GetMapImage">
+<interface>
+<io>
+<par name="DupImage" base_type="iconic" dimension="0"/>
+</io>
+<oo>
+<par name="MapImage" base_type="iconic" dimension="0"/>
+<par name="MapSingle" base_type="iconic" dimension="0"/>
+</oo>
+<ic>
+<par name="CalibDataID" base_type="ctrl" dimension="0"/>
+<par name="I" base_type="ctrl" dimension="0"/>
+<par name="CamParam" base_type="ctrl" dimension="0"/>
+</ic>
+</interface>
+<body>
+<l>DupImageOut := DupImage</l>
+<c>    * 获得校准表的姿势</c>
+<l>    get_calib_data (CalibDataID, 'calib_obj_pose', [0,I - 1], 'pose', Pose)</l>
+<l>    set_origin_pose (Pose, -1.125, -1.0, 0, PoseNewOrigin)</l>
+<c>    * Generate map</c>
+<c>    * 生成地图</c>
+<l>    gen_image_to_world_plane_map (MapSingle, CamParam, PoseNewOrigin, 768, 576, 900, 800, 0.0025, 'bilinear')</l>
+<l>    concat_obj (DupImageOut, MapSingle, DupImageOut)</l>
+<l>    copy_image (DupImageOut, MapImage)</l>
+<l>return ()</l>
+</body>
+<docu id="GetMapImage">
+<parameters>
+<parameter id="CalibDataID"/>
+<parameter id="CamParam"/>
+<parameter id="DupImage"/>
+<parameter id="I"/>
+<parameter id="MapImage"/>
+<parameter id="MapSingle"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="GetCalibData">
+<interface>
+<oo>
+<par name="Maps" base_type="iconic" dimension="0"/>
+</oo>
+<ic>
+<par name="CalibDataID" base_type="ctrl" dimension="0"/>
+</ic>
+<oc>
+<par name="CamParam" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<l>calibrate_cameras (CalibDataID, Error)</l>
+<l>get_calib_data (CalibDataID, 'camera', 0, 'params', CamParam)</l>
+<l>gen_empty_obj (Maps)</l>
+<l>return ()</l>
+</body>
+<docu id="GetCalibData">
+<parameters>
+<parameter id="CalibDataID"/>
+<parameter id="CamParam"/>
+<parameter id="Maps"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="GetMapsImage">
+<interface>
+<io>
+<par name="Maps" base_type="iconic" dimension="0"/>
+</io>
+<oo>
+<par name="MapsOut" base_type="iconic" dimension="0"/>
+</oo>
+<ic>
+<par name="CalibDataID" base_type="ctrl" dimension="0"/>
+<par name="Index" base_type="ctrl" dimension="0"/>
+<par name="CamParam" base_type="ctrl" dimension="0"/>
+</ic>
+</interface>
+<body>
+<l>MapsOut := Maps</l>
+<l>get_calib_data (CalibDataID, 'calib_obj_pose', [0,Index - 1], 'pose', Pose)</l>
+<l>set_origin_pose (Pose, -1.125, -1.0, 0, PoseNewOrigin)</l>
+<c>* Generate map</c>
+<l>gen_image_to_world_plane_map (MapSingle, CamParam, PoseNewOrigin, 768, 576, 900, 800, 0.0025, 'bilinear')</l>
+<l>concat_obj (MapsOut, MapSingle, MapsOut)</l>
+<l>return ()</l>
+</body>
+<docu id="GetMapsImage">
+<parameters>
+<parameter id="CalibDataID"/>
+<parameter id="CamParam"/>
+<parameter id="Index"/>
+<parameter id="Maps"/>
+<parameter id="MapsOut"/>
+</parameters>
+</docu>
+</procedure>
+</hdevelop>

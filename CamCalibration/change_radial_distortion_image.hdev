@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hdevelop file_version="1.1" halcon_version="12.0">
+<procedure name="main">
+<interface/>
+<body>
+<c>* </c>
+<c>* Rectification by elimination of radial distortion</c>
+<c>* </c>
+<l>read_image (Image, 'pioneer')</l>
+<l>rgb1_to_gray (Image, GrayImage)</l>
+<l>CamParIn := [0.00219846,-78129.2,5.5e-06,5.5e-06,320,240,640,480]</l>
+<l>* read_tuple ('E:/A02SelfDemo/Calibration/'+'CamParIn.ini', CamParIn)</l>
+<c></c>
+<l>CalibrationImage (Image,ImageRectified,CamParIn,CamParOut)</l>
+<c></c>
+<c></c>
+<l>write_tuple (CamParIn, 'E:/A02SelfDemo/Calibration/'+'CamParIn.txt')</l>
+<l>write_tuple (CamParOut, 'E:/A02SelfDemo/Calibration/'+'CamParOut.ini')</l>
+</body>
+<docu id="main">
+<parameters/>
+</docu>
+</procedure>
+<procedure name="CalibrationImage">
+<interface>
+<io>
+<par name="Image" base_type="iconic" dimension="0"/>
+</io>
+<oo>
+<par name="ImageRectified" base_type="iconic" dimension="0"/>
+</oo>
+<ic>
+<par name="CamParIn" base_type="ctrl" dimension="0"/>
+</ic>
+<oc>
+<par name="CamParOut" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<l>change_radial_distortion_cam_par ('adaptive', CamParIn, 0, CamParOut)</l>
+<l>change_radial_distortion_image (Image, Image, ImageRectified, CamParIn, CamParOut)</l>
+<l>return ()</l>
+</body>
+<docu id="CalibrationImage">
+<parameters>
+<parameter id="CamParIn"/>
+<parameter id="CamParOut"/>
+<parameter id="Image"/>
+<parameter id="ImageRectified"/>
+</parameters>
+</docu>
+</procedure>
+</hdevelop>
